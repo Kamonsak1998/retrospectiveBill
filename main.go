@@ -32,20 +32,24 @@ func main() {
 
 	fmt.Println("Selected List: ", sheetString)
 	fmt.Printf("Selected Partner: %s\n\n", partnerString)
-	fmt.Println("-> Processing ")
+	fmt.Println("==> Processing ")
 	var wg sync.WaitGroup
 	for _, sheet := range sheetList {
 		wg.Add(1)
 		go func(wg *sync.WaitGroup, sheet string) {
-			defer wg.Done()
 			var calPartner int = 3
 			var calMoney int = 34
+			var total int
+			var partnerValue string
+			defer func(total *int) {
+				wg.Done()
+				fmt.Printf("-> Sheet %s finished, Total partner: %d\n", sheet, *total)
+			}(&total)
 			for {
 				rows, _ := f.GetRows(sheet)
 				if calMoney > len(rows) {
 					break
 				}
-				var partnerValue string
 				if tmp := strings.Split(rows[calPartner-1][0], " "); len(tmp) < 2 {
 					return
 				} else {
@@ -55,13 +59,14 @@ func main() {
 					for i := calMoney - 33; i <= calMoney+6; i++ {
 						f.RemoveRow(sheet, calMoney-33)
 					}
-					if partnerValue != "" && partnerValue != "__________________________" {
-						fmt.Println(partnerValue)
-					}
+					// if partnerValue != "" && partnerValue != "__________________________" {
+					// 	fmt.Println(partnerValue)
+					// }
 				} else {
-					fmt.Println(partnerValue, "--written")
+					total++
 					calPartner += 40
 					calMoney += 40
+					fmt.Println("  ", partnerValue, "save to ", sheet)
 				}
 			}
 
@@ -74,8 +79,8 @@ func main() {
 	if err != nil {
 		log.Fatal("Save file fail: ", err)
 	}
-	fmt.Println("-> Done.")
-	fmt.Printf("-> output file: %s\n", output)
+	fmt.Println("==> Done.")
+	fmt.Printf("==> output file: %s\n", output)
 }
 
 func readArgument() {

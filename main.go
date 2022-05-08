@@ -44,7 +44,12 @@ func main() {
 				if calMoney > len(rows) {
 					break
 				}
-				partnerValue := strings.Split(rows[calPartner-1][0], " ")[1]
+				var partnerValue string
+				if tmp := strings.Split(rows[calPartner-1][0], " "); len(tmp) < 2 {
+					return
+				} else {
+					partnerValue = tmp[1]
+				}
 				if rows[calMoney-1][5] == "0.00" || ((partnerString != "" && partnerString != "*") && !strings.Contains(partnerString, partnerValue)) {
 					for i := calMoney - 33; i <= calMoney+6; i++ {
 						f.RemoveRow(sheet, calMoney-33)

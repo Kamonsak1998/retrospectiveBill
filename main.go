@@ -37,6 +37,7 @@ func main() {
 	for _, sheet := range sheetList {
 		wg.Add(1)
 		go func(wg *sync.WaitGroup, sheet string) {
+			defer wg.Done()
 			var calPartner int = 3
 			var calMoney int = 34
 			for {
@@ -63,7 +64,7 @@ func main() {
 					calMoney += 40
 				}
 			}
-			wg.Done()
+
 		}(&wg, sheet)
 	}
 	wg.Wait()
